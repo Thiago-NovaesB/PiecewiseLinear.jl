@@ -1,0 +1,8 @@
+name = "PiecewiseLinear"
+uuid = "8e551a8e-dba7-41e6-b39f-52c5706d0a8e"
+authors = ["Thiago Novaes <thiagonovaesb@poli.ufrj.br>"]
+version = "0.1.0"
+
+[deps]
+Gurobi = "2e9cd046-0924-5485-92f1-d5272153d98b"
+JuMP = "4076af6c-e467-56ae-b986-b466b2749572"
