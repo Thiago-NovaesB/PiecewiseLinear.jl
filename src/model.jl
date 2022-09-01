@@ -87,6 +87,6 @@ function _objective_function!(prb::Problem)
         @objective(model, Min, sum(cache.w .* error))
     else
         z = model[:z]
-        @objective(model, Min, sum((z[n]-cache.f[n])^2 for n in 1:cache.N))
+        @objective(model, Min, sum(cache.w[n] *(z[n]-cache.f[n])^2 for n in 1:cache.N))
     end 
 end

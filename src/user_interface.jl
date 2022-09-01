@@ -50,5 +50,17 @@ function fit!(prb::Problem)
 end
 
 function plot(prb::Problem)
+
+    data = prb.data
+    cache = prb.cache
+    linearization = prb.linearization
+
+    a = linearization.a 
+    b = linearization.b
+
+    plot(data.grid, cache.f, legend = :outertopleft)
+    for p in 1:data.pieces
+        plot!(data.grid, a[p]*data.grid.+b[p])
+    end
     nothing
 end
