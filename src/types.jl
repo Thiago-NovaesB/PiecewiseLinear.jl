@@ -1,9 +1,9 @@
-@enum Norm L1=1 L2=2
-@enum Special Convex=1 Concave=2 None=3
+@enum Norm L1=1 L2=2 Linf=3
+@enum ForceProp none= 1 convex=2 concave=3 
 
 @kwdef mutable struct Data
     norm::Norm = L1
-    special::Special = Convex
+    force_prop::ForceProp = none
     grid::Vector{Float64}
     f::Union{Function,Vector{Float64}} = Float64[]
     pieces::Int
