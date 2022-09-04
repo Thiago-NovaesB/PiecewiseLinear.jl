@@ -2,8 +2,8 @@ function create(f::Union{Function,Vector{Float64}},
     grid::Vector{Float64},
     pieces::Int,
     solver::Union{DataType,Nothing};
-    norm::Norm = L1,
-    force_prop::ForceProp = convex,
+    norm::Norm = L2,
+    force_prop::ForceProp = none,
     weights::Union{Function,Vector{Float64}} = (x->1.0),
     force_y::Dict{Int,Float64} = Dict{Int,Float64}(),
     )
@@ -67,9 +67,9 @@ function plot(prb::Problem)
     delta_f = maximum(cache.f) - minimum(cache.f)
     ymax =  maximum(cache.f) + 0.1*delta_f
     ymin =  minimum(cache.f) - 0.1*delta_f
-    plt = Plots.plot(data.grid, cache.f, legend = :outertopleft, title="Error = $(linearization.residual)", label = "f", linewdth=1, ylim=(ymin,ymax ))
+    plt = Plots.plot(data.grid, cache.f, lw=5, legend = :outertopleft, title="Error = $(linearization.residual)", label = "f", ylim=(ymin,ymax ))
     for p in 1:data.pieces
-        Plots.plot!(plt, data.grid, a[p]*data.grid.+b[p], label="r$(p)", linewdth=5)
+        Plots.plot!(plt, data.grid, a[p]*data.grid.+b[p], label="r$(p)", lw=1)
     end
     return plt
 end

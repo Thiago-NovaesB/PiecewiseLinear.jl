@@ -39,7 +39,7 @@ function _add_variables!(prb::Problem)
     @variable(model, c[1:cache.N,1:data.pieces], Bin)
     @variable(model, y[1:cache.N])
     if data.norm == L1
-        @variable(model, error[1:cache.N])
+        @variable(model, 0 <= error[1:cache.N])
     end 
     if data.norm == Linf
         @variable(model, max_error)
@@ -94,7 +94,7 @@ function _objective_function!(prb::Problem)
 
     if data.norm == L1
         error = model[:error]
-        @objective(model, Min, sum(cache.w .* error))
+        @objective(model, Min, sum(cache.w[n] * error[n] for n in 1:cache.N))
     elseif data.norm == L2
         y = model[:y]
         @objective(model, Min, sum(cache.w[n] *(y[n]-cache.f[n])^2 for n in 1:cache.N))
