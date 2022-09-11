@@ -1,35 +1,15 @@
-# force_y::Dict{Int,Float64}
-
-function _load_cache!(prb::Problem)
-    data = prb.data
-    cache = prb.cache
-
-    cache.N = length(data.grid)
-    if typeof(data.f) == Vector{Float64}
-        cache.f = data.f
-    else
-        cache.f = data.f.(data.grid)
-    end
-
-    if typeof(data.weights) == Vector{Float64}
-        cache.w = data.weights
-    else
-        cache.w = data.weights.(data.grid)
-    end
-end
-
-function _create_model!(prb::Problem)
+function _create_model_free!(prb::Problem)
 
     prb.model = Model(prb.data.solver)
     JuMP.MOI.set(prb.model, JuMP.MOI.Silent(), true)
 
-    _add_variables!(prb)
-    _add_expressions!(prb)
-    _add_constraints!(prb)
-    _objective_function!(prb)
+    _add_variables_free!(prb)
+    _add_expressions_free!(prb)
+    _add_constraints_free!(prb)
+    _objective_function_free!(prb)
 end
 
-function _add_variables!(prb::Problem)
+function _add_variables_free!(prb::Problem)
     model = prb.model
     data = prb.data
     cache = prb.cache
@@ -46,7 +26,7 @@ function _add_variables!(prb::Problem)
     end 
 end
 
-function _add_expressions!(prb::Problem)
+function _add_expressions_free!(prb::Problem)
     model = prb.model
     data = prb.data
     cache = prb.cache
@@ -56,7 +36,7 @@ function _add_expressions!(prb::Problem)
 end
 
 
-function _add_constraints!(prb::Problem)
+function _add_constraints_free!(prb::Problem)
     model = prb.model
     data = prb.data
     cache = prb.cache
@@ -87,7 +67,7 @@ function _add_constraints!(prb::Problem)
     end
 end
 
-function _objective_function!(prb::Problem)
+function _objective_function_free!(prb::Problem)
     model = prb.model
     cache = prb.cache
     data = prb.data
