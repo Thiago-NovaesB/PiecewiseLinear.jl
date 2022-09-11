@@ -36,7 +36,7 @@ function _check_consistency(prb::Problem)
 
     data = prb.data
     @assert(data.solver == Gurobi.Optimizer)
-    @assert(data.rule == free || !(data.force_prop == none))
+    # @assert(data.rule == free || !(data.force_prop == none))
     nothing
 end
 
@@ -66,8 +66,19 @@ function _load_cache!(prb::Problem)
     end
 
     if data.rule == sec
-        cache.a = [(cache.f[n+1] - cache.f[n])/(data.grid[n+1] - data.grid[n]) for n in 1:cache.N-1]
-        cache.b = [cache.f[n] - cache.a[n]*data.grid[n] for n in 1:cache.N-1]
+        cache.a = zeros(Int(cache.N*(cache.N-1)/2))
+        cache.b = zeros(Int(cache.N*(cache.N-1)/2))
+        cont = 0
+        for i in 1:cache.N-1
+            for j in i+1:cache.N
+                cont += 1
+                a = (cache.f[j] - cache.f[i])/(data.grid[j] - data.grid[i]) 
+                b = cache.f[i] - a*data.grid[i]
+                cache.a[cont] = a
+                cache.b[cont] = b
+            end
+        end
+
     elseif data.rule == grad
         cache.a = cache.g
         cache.b = [cache.f[n] - cache.a[n]*data.grid[n] for n in 1:cache.N]
@@ -103,8 +114,8 @@ function fit!(prb::Problem)
         linearization.a = value.(model[:a])   
         linearization.b = value.(model[:b])
     else
-        linearization.a = cache.a[value.(model[:c])]   
-        linearization.b = cache.b[value.(model[:c])]   
+        linearization.a = cache.a[value.(model[:u]).≈1.0]   
+        linearization.b = cache.b[value.(model[:u]).≈1.0]   
     end
     
     if data.norm == L1

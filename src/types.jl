@@ -1,6 +1,6 @@
 @enum Norm L1=1 L2=2 Linf=3
 @enum ForceProp none= 1 convex=2 concave=3 
-@enum Rules free=1 grad=2 sec=3 
+@enum Rules free=1 grad=2 #sec=3 
 
 @kwdef mutable struct Data
     rule::Rules = free
@@ -38,6 +38,6 @@ end
     data::Data
     cache::Cache
     linearization::Linearization
-    model::Union{JuMP.Model, BilevelJuMP.BilevelModel} = JuMP.Model()
+    model::JuMP.Model
 end
 
