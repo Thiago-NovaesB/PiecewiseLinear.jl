@@ -1,5 +1,7 @@
 # PiecewiseLinear.jl
 
+PiecewiseLinear.jl is a Julia package to find the best piecewise linear approximation for a function given requested properties.
+
 # Import Packages
 
 
@@ -29,9 +31,9 @@ plot(prb)
 
 
 
-    
+
 ![svg](figures/output_4_1.svg)
-    
+ 
 
 
 
