@@ -2,9 +2,10 @@ function _create_model_grad!(prb::Problem)
 
     prb.model = BilevelModel(prb.data.solver, mode = BilevelJuMP.SOS1Mode())
     # JuMP.MOI.set(prb.model, JuMP.MOI.Silent(), true)
-    _add_variables!(prb)
-    _add_constraints!(prb)
-    _objective_function!(prb)
+
+    _add_variables_grad!(prb)
+    _add_constraints_grad!(prb)
+    _objective_function_grad!(prb)
 end
 
 function _add_variables_grad!(prb::Problem)
@@ -53,8 +54,10 @@ function _objective_function_grad!(prb::Problem)
     data = prb.data
 
     if data.force_prop == convex
+        y = model[:y]
         @objective(Lower(model), Min, sum(y))
     elseif data.force_prop == concave
+        y = model[:y]
         @objective(Lower(model), Max, sum(y))
     end
     if data.norm == L1

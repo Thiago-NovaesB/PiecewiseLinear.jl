@@ -2,9 +2,10 @@ function _create_model_sec!(prb::Problem)
 
     prb.model = BilevelModel(prb.data.solver, mode = BilevelJuMP.SOS1Mode())
     # JuMP.MOI.set(prb.model, JuMP.MOI.Silent(), true)
-    _add_variables!(prb)
-    _add_constraints!(prb)
-    _objective_function!(prb)
+
+    _add_variables_sec!(prb)
+    _add_constraints_sec!(prb)
+    _objective_function_sec!(prb)
 end
 
 function _add_variables_sec!(prb::Problem)

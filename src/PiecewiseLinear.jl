@@ -7,7 +7,7 @@ using BilevelJuMP
 
 include("utils.jl")
 include("types.jl")
-include("model.jl")
+include("free.jl")
 include("grad.jl")
 include("sec.jl")
 include("user_interface.jl")

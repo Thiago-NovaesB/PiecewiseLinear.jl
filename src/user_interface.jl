@@ -2,8 +2,8 @@ function create(f::Union{Function,Vector{Float64}},
     grid::Vector{Float64},
     pieces::Int,
     solver::Union{DataType,Nothing};
-    rules::Rules = free,
-    g::Union{Function,Vector{Float64}} = nothing,
+    rule::Rules = free,
+    g::Union{Function,Vector{Float64},Nothing} = nothing,
     norm::Norm = L2,
     force_prop::ForceProp = none,
     weights::Union{Function,Vector{Float64}} = (x->1.0),
@@ -16,7 +16,7 @@ function create(f::Union{Function,Vector{Float64}},
     prb.data.grid = grid;
     prb.data.pieces = pieces;
     prb.data.solver = solver;
-    prb.data.rules = rules;
+    prb.data.rule = rule;
     prb.data.norm = norm;
     prb.data.force_prop = force_prop;
     prb.data.weights = weights;
@@ -36,7 +36,7 @@ function _check_consistency(prb::Problem)
 
     data = prb.data
     @assert(data.solver == Gurobi.Optimizer)
-    @assert(data.rules == free || !(force_prop == none))
+    @assert(data.rule == free || !(data.force_prop == none))
     nothing
 end
 
@@ -50,13 +50,13 @@ function _load_cache!(prb::Problem)
     else
         cache.f = data.f.(data.grid)
     end
-
+    
     if typeof(data.g) == Vector{Float64}
         cache.g = data.g
-    elseif typeof(data.g) == Function
-        cache.g = data.g.(data.grid)
-    else
+    elseif typeof(data.g) == Nothing
         cache.g = nothing
+    else
+        cache.g = data.g.(data.grid)
     end
 
     if typeof(data.weights) == Vector{Float64}
@@ -67,10 +67,10 @@ function _load_cache!(prb::Problem)
 
     if data.rule == sec
         cache.a = [(cache.f[n+1] - cache.f[n])/(data.grid[n+1] - data.grid[n]) for n in 1:cache.N-1]
-        cache.b = [cache.f[n] - a[n]*data.grid[n] for n in 1:cache.N-1]
+        cache.b = [cache.f[n] - cache.a[n]*data.grid[n] for n in 1:cache.N-1]
     elseif data.rule == grad
         cache.a = cache.g
-        cache.b = [cache.f[n] - a[n]*data.grid[n] for n in 1:cache.N]
+        cache.b = [cache.f[n] - cache.a[n]*data.grid[n] for n in 1:cache.N]
     end
 end
 
@@ -99,7 +99,7 @@ function fit!(prb::Problem)
     linearization.y = value.(model[:y])
 
        
-    if rule == free
+    if data.rule == free
         linearization.a = value.(model[:a])   
         linearization.b = value.(model[:b])
     else

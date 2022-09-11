@@ -3,10 +3,10 @@ function _create_model_free!(prb::Problem)
     prb.model = Model(prb.data.solver)
     JuMP.MOI.set(prb.model, JuMP.MOI.Silent(), true)
 
-    _add_variables!(prb)
-    _add_expressions!(prb)
-    _add_constraints!(prb)
-    _objective_function!(prb)
+    _add_variables_free!(prb)
+    _add_expressions_free!(prb)
+    _add_constraints_free!(prb)
+    _objective_function_free!(prb)
 end
 
 function _add_variables_free!(prb::Problem)

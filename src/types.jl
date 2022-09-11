@@ -3,7 +3,7 @@
 @enum Rules free=1 grad=2 sec=3 
 
 @kwdef mutable struct Data
-    rules::Rules = free
+    rule::Rules = free
     norm::Norm = L1
     force_prop::ForceProp = none
     grid::Vector{Float64}
@@ -38,6 +38,6 @@ end
     data::Data
     cache::Cache
     linearization::Linearization
-    model::JuMP.Model
+    model::Union{JuMP.Model, BilevelJuMP.BilevelModel} = JuMP.Model()
 end
 
