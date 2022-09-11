@@ -2,6 +2,8 @@ function create(f::Union{Function,Vector{Float64}},
     grid::Vector{Float64},
     pieces::Int,
     solver::Union{DataType,Nothing};
+    rules::Rules = free,
+    g::Union{Function,Vector{Float64}} = nothing,
     norm::Norm = L2,
     force_prop::ForceProp = none,
     weights::Union{Function,Vector{Float64}} = (x->1.0),
@@ -10,9 +12,11 @@ function create(f::Union{Function,Vector{Float64}},
     prb = Problem();
     
     prb.data.f = f;
+    prb.data.g = g;
     prb.data.grid = grid;
     prb.data.pieces = pieces;
     prb.data.solver = solver;
+    prb.data.rules = rules;
     prb.data.norm = norm;
     prb.data.force_prop = force_prop;
     prb.data.weights = weights;
@@ -32,6 +36,47 @@ function _check_consistency(prb::Problem)
 
     data = prb.data
     @assert(data.solver == Gurobi.Optimizer)
+    @assert(data.rules == free || !(force_prop == none))
+    nothing
+end
+
+function _load_cache!(prb::Problem)
+    data = prb.data
+    cache = prb.cache
+
+    cache.N = length(data.grid)
+    if typeof(data.f) == Vector{Float64}
+        cache.f = data.f
+    else
+        cache.f = data.f.(data.grid)
+    end
+
+    if typeof(data.g) == Vector{Float64}
+        cache.g = data.g
+    elseif typeof(data.g) == Function
+        cache.g = data.g.(data.grid)
+    else
+        cache.g = nothing
+    end
+
+    if typeof(data.weights) == Vector{Float64}
+        cache.w = data.weights
+    else
+        cache.w = data.weights.(data.grid)
+    end
+end
+
+function _create_model!(prb::Problem)
+
+    rule = prb.data.rule
+
+    if rule == free
+        _create_model_free!(prb)
+    elseif rule == grad
+        _create_model_grad!(prb)
+    elseif rule == sec
+        _create_model_sec!(prb)
+    end
     nothing
 end
 
