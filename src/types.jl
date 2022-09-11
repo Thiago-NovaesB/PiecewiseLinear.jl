@@ -19,8 +19,10 @@ end
 
     N::Int
     f::Vector{Float64}
-    f::Union{Vector{Float64}, Nothing} = nothing
+    g::Union{Vector{Float64}, Nothing} = nothing
     w::Vector{Float64}
+    a::Vector{Float64}
+    b::Vector{Float64}
 
 end
 

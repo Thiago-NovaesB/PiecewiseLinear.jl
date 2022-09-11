@@ -64,6 +64,14 @@ function _load_cache!(prb::Problem)
     else
         cache.w = data.weights.(data.grid)
     end
+
+    if data.rule == sec
+        cache.a = [(cache.f[n+1] - cache.f[n])/(data.grid[n+1] - data.grid[n]) for n in 1:cache.N-1]
+        cache.b = [cache.f[n] - a[n]*data.grid[n] for n in 1:cache.N-1]
+    elseif data.rule == grad
+        cache.a = cache.g
+        cache.b = [cache.f[n] - a[n]*data.grid[n] for n in 1:cache.N]
+    end
 end
 
 function _create_model!(prb::Problem)
@@ -88,9 +96,17 @@ function fit!(prb::Problem)
     cache = prb.cache
 
     linearization.x = data.grid 
-    linearization.y = value.(model[:y])   
-    linearization.a = value.(model[:a])   
-    linearization.b = value.(model[:b])   
+    linearization.y = value.(model[:y])
+
+       
+    if rule == free
+        linearization.a = value.(model[:a])   
+        linearization.b = value.(model[:b])
+    else
+        linearization.a = cache.a[value.(model[:c])]   
+        linearization.b = cache.b[value.(model[:c])]   
+    end
+    
     if data.norm == L1
         linearization.residual = objective_value(model)/cache.N
     elseif data.norm == L2

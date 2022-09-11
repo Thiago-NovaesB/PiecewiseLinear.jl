@@ -30,12 +30,10 @@ function _add_constraints_sec!(prb::Problem)
     c = model[:c]
     y = model[:y]
 
-    a = [(cache.f[n+1] - cache.f[n])/(data.grid[n+1] - data.grid[n]) for n in 1:cache.N-1]
-    b = [cache.f[n] - a[n]*data.grid[n] for n in 1:cache.N-1]
     if data.force_prop == convex
-        @constraint(Lower(model), planes[n = 1:cache.N, i = 1:cache.N-1], y[n] >= (a[i]*data.grid[n]+b[i])*c[i])
+        @constraint(Lower(model), planes[n = 1:cache.N, i = 1:cache.N-1], y[n] >= (cache.a[i]*data.grid[n]+cache.b[i])*c[i])
     elseif data.force_prop == concave
-        @constraint(Lower(model), planes[n = 1:cache.N, i = 1:cache.N-1], y[n] <= (a[i]*data.grid[n]+b[i])*c[i])
+        @constraint(Lower(model), planes[n = 1:cache.N, i = 1:cache.N-1], y[n] <= (cache.a[i]*data.grid[n]+cache.b[i])*c[i])
     end
     @constraint(Lower(model), choose[n = 1:cache.N-1], sum(c) == data.pieces)
     if data.norm == L1
