@@ -11,7 +11,8 @@ using JuMP
 
 # Basic example: Use 5 linear functions to approximate:
 $$ f:[0,6] \rightarrow \mathbb{R} $$
-$$f(x) = x^2 - 3x +2 $$
+
+$$ f(x) = x^2 - 3x + 2 $$
 
 ## 1) Norm $L^2$
 
